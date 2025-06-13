@@ -1,0 +1,14 @@
+CC#;Description;Range
+1;Modulation;0-127
+5;Portamento time;0-31
+9;FX Engine;0-127
+24;Voice A Wave;0-127
+25;Voice B Wave;0-127
+26;Voice C Wave;0-127
+27;Voice D Wave;0-127
+28;LFO 2 Amount;0-99
+47;Filter Env Amount;0-127
+54;LFO 1 waveform;0-127
+55;LFO 2 waveform;0-127
+70;LFO 1 Amount;0-99
+71;Filter Resonance;0-99
