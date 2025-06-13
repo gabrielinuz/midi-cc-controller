@@ -38,7 +38,8 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
     // --- Selector de Canal MIDI ---
     new Fl_Box(10, current_y, 80, 25, "MIDI Channel:");
     m_channelChoice = new Fl_Choice(100, current_y, 100, 25);
-    for (int i = 1; i <= 16; ++i) {
+    for (int i = 1; i <= 16; ++i) 
+    {
         m_channelChoice->add(std::to_string(i).c_str());
     }
     m_channelChoice->value(m_currentMidiChannel);
