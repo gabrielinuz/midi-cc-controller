@@ -25,5 +25,4 @@ g++ \
 -lfltk \
 -lrtmidi \
 -lasound \
--ldl \
 -lpthread
