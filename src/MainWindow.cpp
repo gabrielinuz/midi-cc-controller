@@ -2,18 +2,20 @@
  * @file MainWindow.cpp
  * @author Gabriel Nicolás González Ferreira (gabrielinuz@fi.mdp.edu.ar)
  * @brief Implementación de la clase MainWindow.
- * @version 0.4
- * @date 2025-06-13
+ * @version 0.5
+ * @date 2025-06-14
  */
 #include "MainWindow.hpp"
-#include "ConfigParser.hpp"
-#include "SliderControl.hpp" // Se sigue necesitando para crear instancias
+#include "MidiLayoutParser.hpp" // Nuevo include
+#include "MidiPresetParser.hpp" // Nuevo include
+#include "SliderControl.hpp"    // Se sigue necesitando para crear instancias
 #include <FL/fl_ask.H>
 #include <FL/Fl.H>
 #include <FL/Fl_File_Chooser.H> // Necesario para diálogos de archivo
 #include <algorithm>
 #include <sstream>
-#include <fstream> // Necesario para std::ofstream
+#include <fstream>
+#include <map> // Para cargar presets
 
 MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr<MidiService> midiService)
     : m_midiService(midiService)
@@ -22,7 +24,7 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
     m_window->begin();
 
     int current_y = 10;
-    
+
     // --- Barra de Estado ---
     m_statusBox = new Fl_Box(10, current_y, width - 20, 25, "Status: Initializing...");
     m_statusBox->box(FL_THIN_UP_BOX);
@@ -31,261 +33,312 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
 
     // --- Selector de Puerto MIDI ---
     new Fl_Box(10, current_y, 80, 25, "MIDI Port:");
-    m_portChoice = new Fl_Choice(100, current_y, width - 110, 25);
+    m_portChoice = new Fl_Choice(100, current_y, 280, 25);
     m_portChoice->callback(onPortSelected_static, this);
-    current_y += 30;
+    populateMidiPorts();
+    current_y += 35;
 
     // --- Selector de Canal MIDI ---
     new Fl_Box(10, current_y, 80, 25, "MIDI Channel:");
     m_channelChoice = new Fl_Choice(100, current_y, 100, 25);
-    for (int i = 1; i <= 16; ++i) 
-    {
+    for (int i = 1; i <= 16; ++i) {
         m_channelChoice->add(std::to_string(i).c_str());
     }
-    m_channelChoice->value(m_currentMidiChannel);
+    m_channelChoice->value(0); // Por defecto Canal 1 (índice 0)
+    m_currentMidiChannel = 0;  // Inicializar el estado interno
     m_channelChoice->callback(onChannelSelected_static, this);
-    current_y += 40;
+    current_y += 35;
 
-    // --- Botones de Gestión de Patches ---
-    m_loadPatchButton = new Fl_Button(10, current_y, 120, 25, "Cargar Patch...");
-    m_loadPatchButton->callback(onLoadPatch_static, this);
+    // --- Botones de Gestión de Layout y Presets ---
+    int button_x = 10;
+    int button_width = 120;
+    int button_height = 25;
+    int button_spacing = 10;
 
-    m_savePatchButton = new Fl_Button(140, current_y, 120, 25, "Guardar Patch...");
-    m_savePatchButton->callback(onSavePatch_static, this);
+    m_loadLayoutButton = new Fl_Button(button_x, current_y, button_width, button_height, "Load Layout");
+    m_loadLayoutButton->callback(onLoadLayout_static, this);
+    button_x += button_width + button_spacing;
 
-    m_sendAllButton = new Fl_Button(270, current_y, 120, 25, "Enviar Todo");
+    m_loadPresetButton = new Fl_Button(button_x, current_y, button_width, button_height, "Load Preset");
+    m_loadPresetButton->callback(onLoadPreset_static, this);
+    button_x += button_width + button_spacing;
+
+    m_savePresetButton = new Fl_Button(button_x, current_y, button_width, button_height, "Save Preset");
+    m_savePresetButton->callback(onSavePreset_static, this);
+    button_x += button_width + button_spacing;
+
+    m_sendAllButton = new Fl_Button(button_x, current_y, button_width, button_height, "Send All");
     m_sendAllButton->callback(onSendAll_static, this);
     current_y += 35;
 
+
     // --- Grupo de Scroll para Controles Dinámicos ---
-    m_scrollGroup = new Fl_Scroll(0, current_y, width, height - current_y);
+    // El scroll group contendrá todos los sliders MIDI.
+    // Su posición y tamaño inicial se ajustará, pero permitirá scroll si hay muchos controles.
+    m_scrollGroup = new Fl_Scroll(10, current_y, width - 20, height - current_y - 10);
     m_scrollGroup->type(Fl_Scroll::VERTICAL);
-    m_scrollGroup->end(); 
-    
-    m_window->end();
+    m_scrollGroup->begin(); // Los widgets que se creen a continuación serán hijos de m_scrollGroup
 
-    // CORRECCIÓN DE REDIMENSIONAMIENTO:
-    // Se establece el grupo de scroll como el componente "resizable" de la ventana.
-    // Esto hace que el área de scroll se expanda y contraiga con la ventana.
-    m_window->resizable(m_scrollGroup);
+    // Aquí no se crean sliders inicialmente. Se harán con loadMidiLayoutFromFile.
 
-    populateMidiPorts();
+    m_scrollGroup->end(); // Fin del grupo de scroll
+    m_window->end(); // Fin de la ventana principal
+
+    // Hacer la ventana redimensionable y ajustar su mínimo tamaño.
+    m_window->resizable(m_window);
+    m_window->size_range(width, 250); // Mínimo 250 de altura para asegurar que los controles estáticos sean visibles
 }
 
 MainWindow::~MainWindow()
 {
-    delete m_window;
+    // Los widgets hijos de Fl_Window se destruyen automáticamente cuando la ventana es destruida.
+    // Solo necesitamos limpiar los unique_ptr de m_controls.
+    clearDynamicControls();
 }
 
-void MainWindow::populateMidiPorts()
+/**
+ * @brief Elimina todos los controles MIDI dinámicos actuales de la GUI.
+ * @details Esto se llama antes de cargar un nuevo layout para limpiar la interfaz.
+ */
+void MainWindow::clearDynamicControls()
 {
-    // ... (sin cambios en este método)
-    if (!m_midiService) return;
-    if (!m_midiService->getInitializationError().empty())
+    if (m_scrollGroup)
     {
-        updateStatus("RtMidi Init Error: " + m_midiService->getInitializationError());
-        fl_alert("RtMidi Init Error: %s", m_midiService->getInitializationError().c_str());
-        m_portChoice->deactivate();
-        return;
+        m_scrollGroup->clear(); // Elimina todos los widgets hijos de Fl_Scroll
     }
-    m_portChoice->clear();
-    unsigned int nPorts = m_midiService->getPortCount();
-    if (nPorts == 0)
-    {
-        m_portChoice->add("No MIDI ports found");
-        m_portChoice->deactivate();
-        updateStatus("No MIDI output ports found.");
-    }
-    else
-    {
-        for (unsigned int i = 0; i < nPorts; ++i)
-        {
-            m_portChoice->add(m_midiService->getPortName(i).c_str());
-        }
-        m_portChoice->value(0);
-        onPortSelected();
-    }
+    m_controls.clear(); // Limpia el vector de unique_ptr
+}
+
+/**
+ * @brief Crea y añade un nuevo control deslizante a la interfaz.
+ * @param config La configuración del slider.
+ * @param y_position La posición Y donde se debe dibujar el slider dentro del scroll group.
+ */
+void MainWindow::addSliderControl(const SliderConfig& config, int y_position)
+{
+    // El SliderControl necesita un puntero al canal MIDI actual para sus callbacks.
+    // Se le pasa la dirección de m_currentMidiChannel.
+    auto sliderControl = std::make_unique<SliderControl>(config, m_midiService);
+    sliderControl->createWidgets(10, y_position, m_scrollGroup->w() - 20, 45, &m_currentMidiChannel);
+    // Establecer el callback del slider individual
+    sliderControl->getFlSlider()->callback(SliderControl::sliderCallback_static, sliderControl.get());
+    m_controls.push_back(std::move(sliderControl));
 }
 
 
-void MainWindow::loadControlsFromFile(const std::string& configFile)
+/**
+ * @brief Carga las configuraciones de los controles desde un archivo CSV de layout.
+ * @param filename La ruta del archivo CSV con el diseño de los controles.
+ * @return true Si el layout fue cargado exitosamente.
+ * @return false Si hubo un error al cargar el layout.
+ */
+bool MainWindow::loadMidiLayoutFromFile(const std::string& filename)
 {
     std::vector<SliderConfig> configs;
-    if (!ConfigParser::parse(configFile, configs))
+    if (!MidiLayoutParser::parse(filename, configs))
     {
-        updateStatus("Error: Could not load or parse config.csv");
-        fl_alert("Error loading config.csv. Check console output.");
-        return;
-    }
-    
-    if (configs.empty())
-    {
-        updateStatus("Config file is empty or contains no valid controls.");
-        return;
+        updateStatus("Error loading MIDI layout from " + filename);
+        fl_alert(("Error al cargar el layout MIDI desde:\n" + filename).c_str());
+        return false;
     }
 
+    // Limpiar los controles existentes antes de crear nuevos
+    clearDynamicControls();
+
+    if (configs.empty()) {
+        updateStatus("Warning: No slider configurations found in " + filename);
+        fl_alert(("Advertencia: No se encontraron configuraciones de sliders en:\n" + filename + "\nEl controlador estará vacío.").c_str());
+        return true; // No es un error crítico si el archivo está vacío pero se abrió correctamente.
+    }
+
+    // Volver a establecer el grupo de scroll como el grupo actual para añadir widgets.
     m_scrollGroup->begin();
-    int current_y = m_scrollGroup->y(); // Coordenada Y relativa al inicio del scroll
-    const int control_width = m_scrollGroup->w() - 20; // Ancho de control, dejando margen para la barra de scroll
+    int current_y_in_scroll = 0; // Posición Y dentro del grupo de scroll
+    int slider_height = 45; // Altura de cada grupo de slider (label + slider)
+    int slider_spacing = 5; // Espacio entre sliders
 
-    m_controls.clear(); // Limpiar controles existentes
-    Fl::lock(); // Bloquear FLTK para evitar redibujados intermedios (mejora rendimiento)
-    for (const auto& cfg : configs)
+    for (const auto& config : configs)
     {
-        auto slider = std::make_unique<SliderControl>(cfg, m_midiService);
-        slider->createWidgets(0, current_y, control_width, slider->getHeight(), &m_currentMidiChannel);
-        m_controls.push_back(std::move(slider));
-        current_y += m_controls.back()->getHeight();
+        addSliderControl(config, current_y_in_scroll);
+        current_y_in_scroll += (slider_height + slider_spacing);
     }
-    Fl::unlock();
-    m_scrollGroup->end(); 
-    m_scrollGroup->redraw();
+    m_scrollGroup->end();
+
+    // Ajustar el tamaño del scroll group para que contenga todos los sliders
+    // y permitir el scroll si es necesario.
+    m_scrollGroup->init_sizes(); // Esto recalcula el tamaño interno del scroll group.
+
+    // Ajustar la altura de la ventana si los nuevos controles exceden la altura inicial.
+    // Esto asegura que la ventana se adapte al contenido.
+    int minimum_height_for_controls = m_scrollGroup->y() + current_y_in_scroll + 10;
+    m_window->size(m_window->w(), std::max(m_window->h(), minimum_height_for_controls));
+    m_window->redraw(); // Forzar el redibujado de la ventana y sus hijos.
+
+    updateStatus("MIDI layout loaded from " + filename + ". " + std::to_string(configs.size()) + " sliders created.");
+    return true;
 }
 
 void MainWindow::show(int argc, char** argv)
 {
     m_window->show(argc, argv);
+    // Asegurarse de que el puerto MIDI esté inicializado y seleccionado si hay alguno disponible.
+    onPortSelected();
 }
 
 void MainWindow::updateStatus(const std::string& message)
 {
-    if (m_statusBox) 
+    if (m_statusBox)
     {
-        m_statusBox->copy_label(message.c_str());
-        Fl::check();
+        m_statusBox->label(message.c_str());
+        m_statusBox->redraw();
     }
 }
 
-// --- Implementación de los Callbacks Estáticos ---
+// --- Callbacks Estáticos (Trampolines) ---
 void MainWindow::onPortSelected_static(Fl_Widget* w, void* userdata)
-{ static_cast<MainWindow*>(userdata)->onPortSelected(); }
+{
+    static_cast<MainWindow*>(userdata)->onPortSelected();
+}
 
 void MainWindow::onChannelSelected_static(Fl_Widget* w, void* userdata)
-{ static_cast<MainWindow*>(userdata)->onChannelSelected(); }
+{
+    static_cast<MainWindow*>(userdata)->onChannelSelected();
+}
 
-void MainWindow::onLoadPatch_static(Fl_Widget* w, void* userdata)
-{ static_cast<MainWindow*>(userdata)->onLoadPatch(); }
+void MainWindow::onLoadLayout_static(Fl_Widget* w, void* userdata) // Nuevo callback
+{
+    static_cast<MainWindow*>(userdata)->onLoadLayout();
+}
 
-void MainWindow::onSavePatch_static(Fl_Widget* w, void* userdata)
-{ static_cast<MainWindow*>(userdata)->onSavePatch(); }
+void MainWindow::onLoadPreset_static(Fl_Widget* w, void* userdata)
+{
+    static_cast<MainWindow*>(userdata)->onLoadPreset();
+}
+
+void MainWindow::onSavePreset_static(Fl_Widget* w, void* userdata)
+{
+    static_cast<MainWindow*>(userdata)->onSavePreset();
+}
 
 void MainWindow::onSendAll_static(Fl_Widget* w, void* userdata)
-{ static_cast<MainWindow*>(userdata)->onSendAll(); }
+{
+    static_cast<MainWindow*>(userdata)->onSendAll();
+}
 
-// --- Lógica de la Instancia para los Callbacks ---
+// --- Lógica de Callbacks de Instancia ---
 void MainWindow::onPortSelected()
 {
-    // ... (sin cambios en este método)
-    if (!m_midiService) return;
-    m_midiService->closePort();
-    unsigned int port_idx = m_portChoice->value();
-    if (m_midiService->openPort(port_idx))
+    if (!m_midiService)
     {
-        updateStatus("Opened MIDI port: " + m_midiService->getPortName(port_idx));
+        updateStatus("Error: MIDI service not available.");
+        return;
+    }
+
+    int port_index = m_portChoice->value();
+    if (port_index < 0 || port_index >= (int)m_midiService->getPortCount())
+    {
+        updateStatus("No MIDI port selected or available.");
+        m_midiService->closePort();
+        return;
+    }
+
+    std::string port_name = m_midiService->getPortName(port_index);
+    if (m_midiService->openPort(port_index))
+    {
+        updateStatus("MIDI port " + port_name + " opened successfully.");
     }
     else
     {
-        updateStatus("Error: Failed to open MIDI port.");
+        updateStatus("Failed to open MIDI port: " + port_name + ". " + m_midiService->getInitializationError());
+        fl_alert(("No se pudo abrir el puerto MIDI:\n" + port_name + "\n" + m_midiService->getInitializationError()).c_str());
     }
 }
 
 void MainWindow::onChannelSelected()
 {
-    // ... (sin cambios en este método)
     m_currentMidiChannel = static_cast<unsigned char>(m_channelChoice->value());
-    std::stringstream ss;
-    ss << "MIDI Channel set to " << (int)m_currentMidiChannel + 1;
-    updateStatus(ss.str());
+    updateStatus("MIDI Channel set to " + std::to_string(m_currentMidiChannel + 1));
 }
 
 /**
- * @brief Abre un diálogo para que el usuario seleccione un archivo de patch y lo carga.
+ * @brief Muestra un diálogo para seleccionar un archivo de layout MIDI y lo carga.
  */
-void MainWindow::onLoadPatch() {
-    Fl_File_Chooser chooser(".",                        // Directorio inicial
-                            "Patch Files (*.csv)",      // Filtro de archivos
-                            Fl_File_Chooser::SINGLE,    // Tipo de selección
-                            "Cargar Patch");            // Título de la ventana
-    chooser.show();
-    while(chooser.shown()) { Fl::wait(); }
+void MainWindow::onLoadLayout()
+{
+    const char* filename = fl_file_chooser("Load MIDI Controller Layout", "*.csv", "");
+    if (filename)
+    {
+        loadMidiLayoutFromFile(filename);
+    }
+}
 
-    if (chooser.value() == nullptr) {
-        updateStatus("Carga de patch cancelada.");
+/**
+ * @brief Muestra un diálogo para seleccionar un archivo de preset MIDI y carga sus valores.
+ */
+void MainWindow::onLoadPreset()
+{
+    if (m_controls.empty()) {
+        updateStatus("Error: No MIDI controls loaded. Please load a layout first.");
+        fl_alert("No hay controles MIDI cargados. Por favor, carga un archivo de diseño (layout) primero.");
         return;
     }
 
-    std::string filename = chooser.value();
-    std::map<int, int> patchData;
-    if (!ConfigParser::parsePatch(filename, patchData)) {
-        updateStatus("Error al leer el archivo de patch: " + filename);
-        fl_alert("No se pudo abrir o leer el archivo de patch. Ver la consola.");
-        return;
-    }
-
-    if (patchData.empty()) {
-        updateStatus("El archivo de patch está vacío o no es válido.");
-        return;
-    }
-    
-    // Actualizar los controles con los valores del patch
-    int controls_updated = 0;
-    Fl::lock();
-    for (auto& control : m_controls) {
-        int cc = control->getCcNumber();
-        auto it = patchData.find(cc);
-        if (it != patchData.end()) {
-            // it->first es la clave (CC#), it->second es el valor
-            control->setCurrentValue(it->second);
-            controls_updated++;
+    const char* filename = fl_file_chooser("Load MIDI Preset", "*.csv", "");
+    if (filename)
+    {
+        std::map<int, int> presetData;
+        if (MidiPresetParser::load(filename, presetData))
+        {
+            int updated_count = 0;
+            for (const auto& control : m_controls)
+            {
+                int cc_num = control->getCcNumber();
+                if (presetData.count(cc_num))
+                {
+                    control->setCurrentValue(presetData[cc_num]);
+                    updated_count++;
+                }
+            }
+            updateStatus("Preset loaded from " + std::string(filename) + ". " + std::to_string(updated_count) + " controls updated.");
+        }
+        else
+        {
+            updateStatus("Error loading preset from " + std::string(filename));
+            fl_alert(("Error al cargar el preset MIDI desde:\n" + std::string(filename)).c_str());
         }
     }
-    Fl::unlock();
-    m_window->redraw(); // Redibujar toda la ventana para mostrar los cambios.
-
-    std::stringstream ss;
-    ss << "Patch '" << filename << "' cargado. " << controls_updated << " controles actualizados.";
-    updateStatus(ss.str());
 }
 
 /**
- * @brief Abre un diálogo para que el usuario guarde el estado actual de los controles en un archivo de patch.
+ * @brief Muestra un diálogo para guardar el estado actual de los controles como un preset MIDI.
  */
-void MainWindow::onSavePatch() {
-    Fl_File_Chooser chooser(".", "Patch Files (*.csv)", Fl_File_Chooser::CREATE, "Guardar Patch Como");
-    chooser.show();
-    while(chooser.shown()) { Fl::wait(); }
-
-    if (chooser.value() == nullptr) {
-        updateStatus("Guardado de patch cancelado.");
+void MainWindow::onSavePreset()
+{
+    if (m_controls.empty()) {
+        updateStatus("No sliders to save.");
+        fl_alert("No hay sliders cargados para guardar un preset.");
         return;
     }
-    
-    std::string filename = chooser.value();
-    // Asegurarse de que la extensión sea .csv
-    if (filename.rfind(".csv") == std::string::npos) {
-        filename += ".csv";
-    }
 
-    std::ofstream file(filename);
-    if (!file.is_open()) {
-        updateStatus("Error: No se pudo crear el archivo " + filename);
-        fl_alert("No se pudo crear el archivo para guardar el patch.");
-        return;
-    }
-    
-    // Escribir cabecera
-    file << "CC#;Description;Range;Value\n";
+    const char* filename_char = fl_file_chooser("Save MIDI Preset As", "*.csv", "preset.csv", 1);
+    if (filename_char)
+    {
+        std::string filename = filename_char;
+        // Asegurarse de que la extensión sea .csv
+        if (filename.rfind(".csv") == std::string::npos) {
+            filename += ".csv";
+        }
 
-    // Escribir datos de cada control
-    for (const auto& control : m_controls) {
-        file << control->getCcNumber() << ";"
-             << control->getDescription() << ";"
-             << control->getRange() << ";"
-             << control->getCurrentValue() << "\n";
+        if (MidiPresetParser::save(filename, m_controls))
+        {
+            updateStatus("Preset saved to " + filename);
+        }
+        else
+        {
+            updateStatus("Error saving preset to " + filename);
+            fl_alert(("No se pudo crear el archivo para guardar el preset:\n" + filename).c_str());
+        }
     }
-
-    file.close();
-    updateStatus("Patch guardado en " + filename);
 }
 
 /**
@@ -297,14 +350,39 @@ void MainWindow::onSendAll() {
         fl_alert("Por favor, selecciona un puerto MIDI válido primero.");
         return;
     }
-    
+
+    int sent_count = 0;
     for (const auto& control : m_controls) {
         m_midiService->sendCcMessage(
             m_currentMidiChannel,
             static_cast<unsigned char>(control->getCcNumber()),
             static_cast<unsigned char>(control->getCurrentValue())
         );
+        sent_count++;
     }
-    
-    updateStatus("Se han enviado los valores de todos los controles.");
+    updateStatus("Sent " + std::to_string(sent_count) + " MIDI CC messages on Channel " + std::to_string(m_currentMidiChannel + 1) + ".");
+}
+
+
+void MainWindow::populateMidiPorts()
+{
+    if (!m_midiService) return;
+
+    m_portChoice->clear();
+    unsigned int num_ports = m_midiService->getPortCount();
+    if (num_ports == 0)
+    {
+        m_portChoice->add("No MIDI ports found");
+        m_portChoice->deactivate();
+        updateStatus("No MIDI output ports found.");
+        return;
+    }
+
+    for (unsigned int i = 0; i < num_ports; ++i)
+    {
+        m_portChoice->add(m_midiService->getPortName(i).c_str());
+    }
+    m_portChoice->value(0); // Seleccionar el primer puerto por defecto
+    m_portChoice->activate();
+    updateStatus("MIDI ports found. Select a port.");
 }

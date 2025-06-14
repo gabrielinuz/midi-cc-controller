@@ -61,8 +61,7 @@ class SliderControl : public IMidiControl
 
         /** @copydoc IMidiControl::setCurrentValue(int) */
         void setCurrentValue(int value) override;
-
-    private:
+        
         /**
         * @brief Callback estático que FLTK puede invocar.
         * @param w El widget que originó el callback.
@@ -70,6 +69,13 @@ class SliderControl : public IMidiControl
         */
         static void sliderCallback_static(Fl_Widget* w, void* userdata);
 
+       /**
+        * @brief Obtiene el puntero al widget Fl_Slider interno.
+        * @return Fl_Slider* El puntero al widget Fl_Slider.
+        */
+        Fl_Slider* getFlSlider() const { return m_slider; }
+
+    private:
         /**
         * @brief Método de instancia que contiene la lógica real del callback.
         */
