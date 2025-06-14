@@ -51,7 +51,7 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
 
     // --- Botones de Gestión de Layout y Presets ---
     int button_x = 10;
-    int button_width = 105;
+    int button_width = 107;
     int button_height = 25;
     int button_spacing = 10;
 
