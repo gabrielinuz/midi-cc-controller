@@ -51,7 +51,7 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
 
     // --- Botones de Gestión de Layout y Presets ---
     int button_x = 10;
-    int button_width = 120;
+    int button_width = 105;
     int button_height = 25;
     int button_spacing = 10;
 
@@ -71,12 +71,11 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
     // Lo ubicamos al lado de los botones de patch
     m_resetAllButton = new Fl_Button(button_x, current_y, button_width, button_height, "Reset All"); // <-- NUEVO: Botón Reset All
     m_resetAllButton->callback(onResetAll_static, this); // <-- NUEVO: Callback para Reset All
-    button_x += button_width + button_spacing; // esto es necesario
+    button_x += button_width + button_spacing; // esto es necesario para el espacio entre botones
 
     m_sendAllButton = new Fl_Button(button_x, current_y, button_width, button_height, "Send All");
     m_sendAllButton->callback(onSendAll_static, this);
     current_y += 35;
-
 
     // --- Grupo de Scroll para Controles Dinámicos ---
     // El scroll group contendrá todos los sliders MIDI.
