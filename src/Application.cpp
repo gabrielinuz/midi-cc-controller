@@ -24,8 +24,10 @@ int Application::run(int argc, char** argv)
     Fl::args(argc, argv);
     Fl::visual(FL_RGB); // Mejorar la apariencia visual.
 
-    // Indicar a la ventana que cargue sus controles desde el archivo.
-    m_mainWindow->loadControlsFromFile("config.csv");
+    // Por defecto, cargar un layout inicial si existe, si no, se cargará por el usuario.
+    // Se recomienda que el usuario cargue el layout explícitamente.
+    // Si quieres un layout por defecto, descomenta la línea siguiente y asegura que 'config.csv' exista.
+    // m_mainWindow->loadMidiLayoutFromFile("config.csv");
     
     // Mostrar la ventana.
     m_mainWindow->show(argc, argv);

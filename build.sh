@@ -11,7 +11,8 @@ g++ \
 -L./include/vendors/fltk/lib/ \
 -L./include/vendors/rtmidi/lib/ \
 ./src/Application.cpp \
-./src/ConfigParser.cpp \
+./src/MidiLayoutParser.cpp \
+./src/MidiPresetParser.cpp \
 ./src/MainWindow.cpp \
 ./src/MidiService.cpp \
 ./src/SliderControl.cpp \
