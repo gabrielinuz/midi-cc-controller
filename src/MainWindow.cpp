@@ -67,6 +67,12 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
     m_savePresetButton->callback(onSavePreset_static, this);
     button_x += button_width + button_spacing;
 
+    // --- Botón de Reset All ---
+    // Lo ubicamos al lado de los botones de patch
+    m_resetAllButton = new Fl_Button(button_x, current_y, button_width, button_height, "Reset All"); // <-- NUEVO: Botón Reset All
+    m_resetAllButton->callback(onResetAll_static, this); // <-- NUEVO: Callback para Reset All
+    button_x += button_width + button_spacing; // esto es necesario
+
     m_sendAllButton = new Fl_Button(button_x, current_y, button_width, button_height, "Send All");
     m_sendAllButton->callback(onSendAll_static, this);
     current_y += 35;
@@ -189,8 +195,10 @@ void MainWindow::updateStatus(const std::string& message)
 {
     if (m_statusBox)
     {
-        m_statusBox->label(message.c_str());
+        // m_statusBox->label(message.c_str());
+        m_statusBox->copy_label(message.c_str());//Este método si actualiza el label
         m_statusBox->redraw();
+        // Fl::check();
     }
 }
 
@@ -218,6 +226,14 @@ void MainWindow::onLoadPreset_static(Fl_Widget* w, void* userdata)
 void MainWindow::onSavePreset_static(Fl_Widget* w, void* userdata)
 {
     static_cast<MainWindow*>(userdata)->onSavePreset();
+}
+
+/**
+ * @brief Callback estático para el botón "Reset All".
+ */
+void MainWindow::onResetAll_static(Fl_Widget* w, void* userdata) // <-- NUEVO: Implementación estática
+{ 
+    static_cast<MainWindow*>(userdata)->onResetAll();
 }
 
 void MainWindow::onSendAll_static(Fl_Widget* w, void* userdata)
@@ -339,6 +355,31 @@ void MainWindow::onSavePreset()
             fl_alert(("No se pudo crear el archivo para guardar el preset:\n" + filename).c_str());
         }
     }
+}
+
+/**
+* @brief Implementa la lógica para resetear todos los controles a sus valores mínimos (0).
+*/
+void MainWindow::onResetAll() 
+{
+    if (m_controls.empty()) 
+    {
+        updateStatus("No hay controles para resetear.");
+        return;
+    }
+
+    // Iterar sobre todos los controles y establecer su valor a 0 (o al mínimo si prefieres)
+    for (const auto& control : m_controls) 
+    {
+        // Asumimos que los sliders deben resetearse a 0 o a su valor mínimo.
+        // En este caso, 0 es un valor MIDI CC común para "apagado" o "inicio".
+        control->setCurrentValue(0); // <-- Establece el valor a 0 (o control->m_config.min_value)
+
+        // Después de establecer el valor, necesitamos simular el envío MIDI
+        // o directamente enviar el mensaje si setCurrentValue no lo hace.
+        m_midiService->sendCcMessage(m_currentMidiChannel, static_cast<unsigned char>(control->getCcNumber()), 0);
+    }
+    updateStatus("Todos los controles han sido reseteados a 0.");
 }
 
 /**

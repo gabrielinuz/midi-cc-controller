@@ -75,6 +75,7 @@ class MainWindow
         static void onLoadLayout_static(Fl_Widget* w, void* userdata); // Nuevo callback
         static void onLoadPreset_static(Fl_Widget* w, void* userdata);
         static void onSavePreset_static(Fl_Widget* w, void* userdata);
+        static void onResetAll_static(Fl_Widget* w, void* userdata); // <-- NUEVO: Callback estático para reset
         static void onSendAll_static(Fl_Widget* w, void* userdata);
 
         // --- Métodos de instancia para la lógica de los callbacks ---
@@ -83,6 +84,7 @@ class MainWindow
         void onLoadLayout(); // Nuevo método de instancia
         void onLoadPreset();
         void onSavePreset();
+        void onResetAll(); // <-- NUEVO: Método de instancia para reset
         void onSendAll();
 
         /** @brief Llena el menú desplegable de puertos MIDI. */
@@ -112,6 +114,7 @@ class MainWindow
         Fl_Button* m_loadLayoutButton; // Nuevo botón
         Fl_Button* m_loadPresetButton;
         Fl_Button* m_savePresetButton;
+        Fl_Button* m_resetAllButton; // <-- NUEVO: Botón de reset
         Fl_Button* m_sendAllButton;
 
         // --- Dependencias y Estado ---
