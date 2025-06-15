@@ -24,13 +24,12 @@ El proyecto sigue una arquitectura orientada a objetos (OOP) con una clara separ
 ```text
 .
 ├── bin/                       # Archivos binarios y compilados
-│   ├── config-files-examples  # Ejemplos de configuraciones de sintetizadores.
+│   ├── config-files-examples  # Ejemplos de layouts y presets de dispositivos MIDI.
 │   ├── lib                    # Bibliotecas dinámicas necesarias para la ejecución (específico de Linux)
 │       ├── libfltk.so.1.3     # Biblioteca FLTK
 │       ├── librtmidi.so       # Biblioteca RtMidi
 │   ├── config.csv             # Configuración inicial de la aplicación.
-│   ├── execute.sh             # Script en bash para forzar la precarga de las bibliotecas locales.
-│   ├── patch1.csv             # Patch de sonido de ejemplo. 
+│   ├── execute.sh             # Script en bash para forzar la precarga de las bibliotecas locales. 
 ├── include/                   # Archivos de cabecera (.h/.hpp)
 │   ├── vendors                # Directorio para bibliotecas de terceros.
 │       ├── fltk               # Headers de la biblioteca gráfica FLTK
