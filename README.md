@@ -36,7 +36,8 @@ El proyecto sigue una arquitectura orientada a objetos (OOP) con una clara separ
 │       ├── fltk               # Headers de la biblioteca gráfica FLTK
 │       ├── rtmidi             # Headers de la biblioteca rtmidi
 │   ├── Application.hpp        # Define la clase `Application`, el orquestador principal del ciclo de vida de la app.          
-│   ├── ConfigParser.hpp       # Define el `namespace ConfigParser` para cargar configuraciones y patches desde archivos CSV.
+│   ├── MidiLayoutParser.hpp   # Define el `namespace MidiLayoutParse` para cargar layouts de dispositivos MIDI desde archivos CSV.
+│   ├── MidiPresetParser.hpp   # Define el `namespace MidiPresetParse` para cargar presets de dispositivos MIDI desde archivos CSV.
 │   ├── IMidiControl.hpp       # Define la interfaz abstracta `IMidiControl` para cualquier control MIDI de la GUI (favorece OCP).
 │   ├── MainWindow.hpp         # Define la clase `MainWindow`, que gestiona la ventana principal y sus widgets.
 │   ├── MidiService.hpp        # Define la clase `MidiService`, que encapsula toda la lógica de comunicación con RtMidi.
@@ -44,7 +45,8 @@ El proyecto sigue una arquitectura orientada a objetos (OOP) con una clara separ
 │   └── SliderControl.hpp      # Define la clase `SliderControl`, una implementación concreta de `IMidiControl` para sliders.
 ├── src/
 │   ├── Application.cpp        # Implementa la lógica de `Application`, inicializando y conectando los componentes principales.  
-│   ├── ConfigParser.cpp       # Implementa las funciones de `ConfigParser` para parsear los archivos CSV.      
+│   ├── MidiLayoutParser.cpp   # Implementa las funciones de `MidiLayoutParser` para parsear los archivos de layouts CSV.      
+│   ├── MidiPresetParser.cpp   # Implementa las funciones de `MidiPresetParser` para parsear los archivos de presets CSV.      
 │   ├── main.cpp               # Contiene la función `main()`, el punto de entrada que crea y ejecuta la instancia de `Application`.
 │   ├── MainWindow.cpp         # Implementa la lógica y el comportamiento de la interfaz de usuario de `MainWindow`.                 
 │   ├── MidiService.cpp        # Implementa los detalles de la comunicación MIDI, utilizando la librería RtMidi.   
