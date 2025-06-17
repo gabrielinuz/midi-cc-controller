@@ -51,9 +51,12 @@ namespace MidiPresetParser
                 int value = std::stoi(segment);
 
                 // Validar datos
-                if (cc_number >= 0 && cc_number <= 127 && value >= 0 && value <= 127) {
+                if (cc_number >= 0 && cc_number <= 127 && value >= 0 && value <= 127)
+                {
                     presetData[cc_number] = value;
-                } else {
+                }
+                else
+                {
                      std::cerr << "Warning: Invalid data in preset line, skipping: " << line << std::endl;
                 }
             }

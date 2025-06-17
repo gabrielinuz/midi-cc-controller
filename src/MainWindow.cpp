@@ -41,7 +41,8 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
     // --- Selector de Canal MIDI ---
     new Fl_Box(10, current_y, 80, 25, "MIDI Channel:");
     m_channelChoice = new Fl_Choice(100, current_y, 100, 25);
-    for (int i = 1; i <= 16; ++i) {
+    for (int i = 1; i <= 16; ++i) 
+    {
         m_channelChoice->add(std::to_string(i).c_str());
     }
     m_channelChoice->value(0); // Por defecto Canal 1 (índice 0)
@@ -150,7 +151,8 @@ bool MainWindow::loadMidiLayoutFromFile(const std::string& filename)
     // Limpiar los controles existentes antes de crear nuevos
     clearDynamicControls();
 
-    if (configs.empty()) {
+    if (configs.empty())
+    {
         updateStatus("Warning: No slider configurations found in " + filename);
         fl_alert(("Advertencia: No se encontraron configuraciones de sliders en:\n" + filename + "\nEl controlador estará vacío.").c_str());
         return true; // No es un error crítico si el archivo está vacío pero se abrió correctamente.
@@ -298,7 +300,8 @@ void MainWindow::onLoadLayout()
  */
 void MainWindow::onLoadPreset()
 {
-    if (m_controls.empty()) {
+    if (m_controls.empty())
+    {
         updateStatus("Error: No MIDI controls loaded. Please load a layout first.");
         fl_alert("No hay controles MIDI cargados. Por favor, carga un archivo de diseño (layout) primero.");
         return;
@@ -335,7 +338,8 @@ void MainWindow::onLoadPreset()
  */
 void MainWindow::onSavePreset()
 {
-    if (m_controls.empty()) {
+    if (m_controls.empty())
+    {
         updateStatus("No sliders to save.");
         fl_alert("No hay sliders cargados para guardar un preset.");
         return;
@@ -346,7 +350,8 @@ void MainWindow::onSavePreset()
     {
         std::string filename = filename_char;
         // Asegurarse de que la extensión sea .csv
-        if (filename.rfind(".csv") == std::string::npos) {
+        if (filename.rfind(".csv") == std::string::npos)
+        {
             filename += ".csv";
         }
 
@@ -390,15 +395,18 @@ void MainWindow::onResetAll()
 /**
  * @brief Envía el valor actual de todos los controles al puerto MIDI.
  */
-void MainWindow::onSendAll() {
-    if (!m_midiService || !m_midiService->isPortOpen()) {
+void MainWindow::onSendAll()
+{
+    if (!m_midiService || !m_midiService->isPortOpen())
+    {
         updateStatus("Error: No hay un puerto MIDI abierto para enviar los datos.");
         fl_alert("Por favor, selecciona un puerto MIDI válido primero.");
         return;
     }
 
     int sent_count = 0;
-    for (const auto& control : m_controls) {
+    for (const auto& control : m_controls)
+    {
         m_midiService->sendCcMessage(
             m_currentMidiChannel,
             static_cast<unsigned char>(control->getCcNumber()),

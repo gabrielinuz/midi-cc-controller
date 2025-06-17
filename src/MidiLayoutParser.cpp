@@ -56,7 +56,8 @@ namespace MidiLayoutParser
                 // Leer Rango (campo 3) - Formato "min-max"
                 std::getline(ss, segment, ';');
                 size_t dash_pos = segment.find('-');
-                if (dash_pos == std::string::npos) {
+                if (dash_pos == std::string::npos)
+                {
                     throw std::runtime_error("Invalid range format, expected 'min-max'");
                 }
                 current_config.min_value = std::stoi(segment.substr(0, dash_pos));

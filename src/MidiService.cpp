@@ -66,7 +66,8 @@ unsigned int MidiService::getPortCount() const
 
 std::string MidiService::getPortName(unsigned int portNumber) const
 {
-    if (!m_midiOut || portNumber >= getPortCount()) {
+    if (!m_midiOut || portNumber >= getPortCount())
+    {
         return "";
     }
     return m_midiOut->getPortName(portNumber);
