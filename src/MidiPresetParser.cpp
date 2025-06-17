@@ -2,18 +2,19 @@
  * @file MidiPresetParser.cpp
  * @author Gabriel Nicolás González Ferreira (gabrielinuz@fi.mdp.edu.ar)
  * @brief Implementación del parser y guardador para archivos de presets MIDI.
- * @version 0.5
- * @date 2025-06-14
+ * @version 0.6
+ * @date 2025-06-17
  */
 #include "MidiPresetParser.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <algorithm> // Para std::remove
+#include <algorithm> 
 
 namespace MidiPresetParser
 {
-    bool load(const std::string& filename, std::map<int, int>& presetData)
+    // @version 0.6: La firma de la función cambia para usar el nuevo struct PresetValue.
+    bool load(const std::string& filename, std::map<int, PresetValue>& presetData)
     {
         std::ifstream file(filename);
         if (!file.is_open())
@@ -34,8 +35,8 @@ namespace MidiPresetParser
         // Procesar cada línea del archivo.
         while (std::getline(file, line))
         {
-            line.erase(std::remove(line.begin(), line.end(), '\r'), line.end()); // Eliminar retornos de carro
-            if (line.empty()) continue; // Saltar líneas vacías
+            line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());// Eliminar retornos de carro
+            if (line.empty() || line.rfind("CC#", 0) == 0) continue; // Saltar líneas vacías o la cabecera
 
             std::stringstream ss(line);
             std::string segment;
@@ -50,10 +51,20 @@ namespace MidiPresetParser
                 std::getline(ss, segment, ';');
                 int value = std::stoi(segment);
 
-                // Validar datos
+                // NUEVO: Leer estado de activación (campo 3)
+                bool active = true; // Por defecto es true para compatibilidad con presets antiguos
+                if (std::getline(ss, segment, ';'))
+                {
+                    // Si hay un tercer campo, lo parseamos.
+                    // Se aceptan "0" o "1". Cualquier otra cosa se trata como error o se ignora.
+                    if (!segment.empty()) {
+                        active = (std::stoi(segment) != 0);
+                    }
+                }
+
                 if (cc_number >= 0 && cc_number <= 127 && value >= 0 && value <= 127)
                 {
-                    presetData[cc_number] = value;
+                    presetData[cc_number] = {value, active}; // Almacenar el struct
                 }
                 else
                 {
@@ -79,14 +90,16 @@ namespace MidiPresetParser
             return false;
         }
 
-        // Escribir cabecera simplificada
-        file << "CC#;Value\n";
+        //  @version 0.6: Escribir nueva cabecera
+        file << "CC#;Value;Active\n";
 
         // Escribir datos de cada control
         for (const auto& control : controls)
         {
+            //  @version 0.6: Guardar el estado de activación
             file << control->getCcNumber() << ";"
-                 << control->getCurrentValue() << "\n";
+                 << control->getCurrentValue() << ";"
+                 << (control->isActive() ? "1" : "0") << "\n";
         }
 
         file.close();

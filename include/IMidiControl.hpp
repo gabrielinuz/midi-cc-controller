@@ -2,7 +2,7 @@
  * @file IMidiControl.hpp
  * @author Gabriel Nicolás González Ferreira (gabrielinuz@fi.mdp.edu.ar)
  * @brief Define la interfaz abstracta para cualquier control MIDI en la GUI.
- * @version 0.4
+ * @version 0.6
  * @date 2025-06-13
  * @copyright Copyright (c) 2025. This project is released under the Apache License.
  * @link http://www.apache.org/licenses/LICENSE-2.0
@@ -21,6 +21,7 @@
  * código existente de la ventana principal.
  * @version 0.4: Se añadieron métodos virtuales puros para gestionar el estado
  * del control (valor, CC#, etc.), permitiendo la funcionalidad de guardar/cargar patches.
+ * @version 0.6: Se añaden métodos para gestionar el estado de activación del control.
  */
 class IMidiControl 
 {
@@ -98,4 +99,20 @@ class IMidiControl
          * @param value El nuevo valor a establecer.
          */
         virtual void setCurrentValue(int value) = 0;
+
+        // --- @version 0.6: Métodos para el estado de activación ---
+
+        /**
+        * @brief Establece el estado de activación del control.
+        * @details Un control inactivo no debería enviar mensajes MIDI y podría aparecer
+        * visualmente deshabilitado.
+        * @param active true para activar el control, false para desactivarlo.
+        */
+        virtual void setActive(bool active) = 0;
+
+        /**
+        * @brief Comprueba si el control está actualmente activo.
+        * @return true si el control está activo, false en caso contrario.
+        */
+        virtual bool isActive() const = 0;
 };

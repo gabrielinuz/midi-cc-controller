@@ -16,6 +16,7 @@ g++ \
 ./src/MainWindow.cpp \
 ./src/MidiService.cpp \
 ./src/SliderControl.cpp \
+./src/Utils.cpp \
 ./src/main.cpp \
 ./include/vendors/rtmidi/src/RtMidi.cpp \
 -o ./bin/midi_cc_editor \
