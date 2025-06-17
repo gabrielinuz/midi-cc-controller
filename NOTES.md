@@ -1,4 +1,4 @@
-# La Importancia de Cerrar Puertos MIDI en RtMidi
+# NOTA # 1 La Importancia de Cerrar Puertos MIDI en RtMidi
 
 La razón técnica por la cual es fundamental cerrar el puerto MIDI antes de intentar abrir uno nuevo (o incluso antes de repopular la lista de puertos en algunos escenarios) se basa principalmente en la naturaleza de la librería **RtMidi** y cómo maneja los recursos del sistema operativo.
 
