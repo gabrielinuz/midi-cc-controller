@@ -249,6 +249,7 @@ void MainWindow::onPortSelected()
         return;
     }
 
+    m_midiService->closePort();// IMPORTANT! Agrego esta línea porque si no cierro primero, luego falla al abrir en la línea 262.
     int port_index = m_portChoice->value();
     if (port_index < 0 || port_index >= (int)m_midiService->getPortCount())
     {

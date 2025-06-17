@@ -1,100 +1,100 @@
 ﻿CC#;Description;Range
-3;VCO1transpose;0-127
-9;VCO1tune;0-127
-14;VCO1shape;0-127
-15;VCO1pulseWidth;0-127
-20;VCO1level;0-127
-21;VCO1subLevel;0-127
-22;VCO1lfo1Mod;0-127
-23;VCO1lfo2Mod;0-127
-24;VCO1lfo3Mod;0-127
-25;VCO1eg1Mod;0-127
-26;VCO1lfo1Pwm;0-127
-27;VCO1lfo2Pwm;0-127
-28;VCO1lfo3Pwm;0-127
-29;VCO1eg1Pwm;0-127
-30;VCO2transpose;0-127
-31;VCO2tune;0-127
-34;VCO2shape;0-127
-35;VCO2pulseWidth;0-127
-36;VCO2level;0-127
-37;VCO2subLevel;0-127
-39;VCO2lfo1Mod;0-127
-40;VCO2lfo2Mod;0-127
-41;VCO2lfo3Mod;0-127
-42;VCO2eg1Mod;0-127
-43;VCO2lfo1Pwm;0-127
-44;VCO2lfo2Pwm;0-127
-45;VCO2lfo3Pwm;0-127
-46;VCO2eg1Pwm;0-127
-47;VCO12detune;0-127
-77;VCO12lfo1Mod;0-127
-48;VCO12lfo2Mod;0-127
-49;VCO12lfo3Mod;0-127
-65;VCO12glideOn;0-127
-5;VCO12glideTime;0-127
-50;VCO12pitchBendRange;0-127
-51;VCO12sync;0-127
-52;EXTlevel;0-127
-53;LFO1shape;0-127
-76;LFO1frequency;0-127
-54;LFO1amplitude;0-127
-55;LFO1aftertouchMod;0-127
-56;LFO1modWheelMod;0-127
-57;LFO1eg1Mod;0-127
-58;LFO1lfo2Mod;0-127
-59;LFO1syncMode;0-127
-60;LFO1mode;0-127
-61;LFO2shape;0-127
-62;LFO2frequency;0-127
-63;LFO2amplitude;0-127
-64;LFO2aftertouchMod;0-127
-66;LFO2modWheelMod;0-127
-67;LFO2eg2Mod;0-127
-68;LFO2velocityMod;0-127
-69;LFO2syncMode;0-127
-70;LFO2mode;0-127
-72;LFO3shape;0-127
-73;LFO3frequency;0-127
-75;LFO3amplitude;0-127
-78;LFO3aftertouchMod;0-127
-79;LFO3modWheelMod;0-127
-84;LFO3syncMode;0-127
-74;VCFcutoff;0-127
-71;VCFresonance;0-127
-85;VCFkeyMod;0-127
-86;VCFvelocityMod;0-127
-87;VCFaftertouchMod;0-127
-88;VCFmodWheelMod;0-127
-89;VCFegMod;0-127
-90;VCFlfo1Mod;0-127
-91;VCFlfo2Mod;0-127
-92;VCFlfo3Mod;0-127
-93;VCAkeyMod;0-127
-94;VCAvelocityMod;0-127
-95;VCAaftertouchMod;0-127
-102;VCAmodWheelMod;0-127
-103;VCAlfo1Mod;0-127
-104;VCAlfo2Mod;0-127
-105;VCAlfo3Mod;0-127
-16;EG1attack;0-127
-17;EG1decay;0-127
-18;EG1sustain;0-127
-19;EG1release;0-127
-106;EG1attackVelocityMod;0-127
-107;EG1releaseVelocityMod;0-127
-80;EG2attack;0-127
-81;EG2decay;0-127
-82;EG2sustain;0-127
-83;EG2release;0-127
-108;EG2attackVelocityMod;0-127
-109;EG2releaseVelocityMod;0-127
-110;FX1type;0-127
-111;FX1delayTime;0-127
-112;FX1feedback;0-127
-12;FX1dryWet;0-127
-113;FX2type;0-127
-114;FX2rate;0-127
-115;FX2depth;0-127
-13;FX2dryWet;0-127
+3;VCO1 transpose;0-127
+9;VCO1 tune;0-127
+14;VCO1 shape;0-127
+15;VCO1 pulse Width;0-127
+20;VCO1 level;0-127
+21;VCO1 subLevel;0-127
+22;VCO1 lfo1 Mod;0-127
+23;VCO1 lfo2 Mod;0-127
+24;VCO1 lfo3 Mod;0-127
+25;VCO1 eg1 Mod;0-127
+26;VCO1 lfo1 Pwm;0-127
+27;VCO1 lfo2 Pwm;0-127
+28;VCO1 lfo3 Pwm;0-127
+29;VCO 1eg1 Pwm;0-127
+30;VCO2 transpose;0-127
+31;VCO2 tune;0-127
+34;VCO2 shape;0-127
+35;VCO2 pulse width;0-127
+36;VCO2 level;0-127
+37;VCO2 subLevel;0-127
+39;VCO2 lfo1 Mod;0-127
+40;VCO2 lfo2 Mod;0-127
+41;VCO2 lfo3 Mod;0-127
+42;VCO2 eg1 Mod;0-127
+43;VCO2 lfo1 Pwm;0-127
+44;VCO2 lfo2 Pwm;0-127
+45;VCO2 lfo3 Pwm;0-127
+46;VCO2 eg1 Pwm;0-127
+47;VCO12 detune;0-127
+77;VCO12 lfo1 Mod;0-127
+48;VCO12 lfo2 Mod;0-127
+49;VCO12 lfo3 Mod;0-127
+65;VCO12 glide On;0-127
+5;VCO12 glide Time;0-127
+50;VCO12 pitch bend range;0-127
+51;VCO12 sync;0-127
+52;EXT level;0-127
+53;LFO1 shape;0-127
+76;LFO1 frequency;0-127
+54;LFO1 amplitude;0-127
+55;LFO1 aftertouch Mod;0-127
+56;LFO1 modWheel Mod;0-127
+57;LFO 1eg1 Mod;0-127
+58;LFO1 lfo2 Mod;0-127
+59;LFO1 sync Mode;0-127
+60;LFO1 mode;0-127
+61;LFO2 shape;0-127
+62;LFO2 frequency;0-127
+63;LFO2 amplitude;0-127
+64;LFO2 aftertouch Mod;0-127
+66;LFO2 modWheel Mod;0-127
+67;LFO2 eg2 Mod;0-127
+68;LFO2 velocity Mod;0-127
+69;LFO2 sync Mode;0-127
+70;LFO2 mode;0-127
+72;LFO3 shape;0-127
+73;LFO3 frequency;0-127
+75;LFO3 amplitude;0-127
+78;LFO3 aftertouch Mod;0-127
+79;LFO3 modWheel Mod;0-127
+84;LFO3 sync Mode;0-127
+74;VCF cutoff;0-127
+71;VCF resonance;0-127
+85;VCF key Mod;0-127
+86;VCF velocity Mod;0-127
+87;VCF aftertouch Mod;0-127
+88;VCF modWheel Mod;0-127
+89;VCF eg Mod;0-127
+90;VCF lfo1 Mod;0-127
+91;VCF lfo2 Mod;0-127
+92;VCF lfo3 Mod;0-127
+93;VCA key Mod;0-127
+94;VCA velocity Mod;0-127
+95;VCA aftertouch Mod;0-127
+102;VCA modWheel Mod;0-127
+103;VCA lfo1 Mod;0-127
+104;VCA lfo2 Mod;0-127
+105;VCA lfo3 Mod;0-127
+16;EG1 attack;0-127
+17;EG1 decay;0-127
+18;EG1 sustain;0-127
+19;EG1 release;0-127
+106;EG1 attack Velocity Mod;0-127
+107;EG1 release Velocity Mod;0-127
+80;EG2 attack;0-127
+81;EG2 decay;0-127
+82;EG2 sustain;0-127
+83;EG2 release;0-127
+108;EG2 attack Velocity Mod;0-127
+109;EG2 release Velocity Mod;0-127
+110;FX1 type;0-127
+111;FX1 delay Time;0-127
+112;FX1 feedback;0-127
+12;FX1 dry wet;0-127
+113;FX2 type;0-127
+114;FX2 rate;0-127
+115;FX2 depth;0-127
+13;FX2 dry wet;0-127
 116;mode;0-127
