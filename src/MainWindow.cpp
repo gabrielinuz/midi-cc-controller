@@ -199,10 +199,8 @@ void MainWindow::show(int argc, char** argv)
 // {
 //     if (m_statusBox)
 //     {
-//         // m_statusBox->label(message.c_str());
 //         m_statusBox->copy_label(message.c_str());//Este método si actualiza el label
 //         m_statusBox->redraw();
-//         // Fl::check();
 //     }
 // }
 
@@ -337,9 +335,11 @@ void MainWindow::onLoadPreset()
     }
 
     const char* filename = fl_file_chooser("Load MIDI Preset", "*.csv", "");
-    std::string display_name = Utils::getFileNameFromPath(filename); /// @version 0.6 - solo el nombre
     if (filename)
     {
+        /// @version 0.6 - solo el nombre, tiene que ir adentro o da error cuando sea nulo IMPORTANTE.
+        std::string display_name = Utils::getFileNameFromPath(filename); 
+
         /// @version 0.6: Usar el nuevo mapa con el struct PresetValue.
         std::map<int, PresetValue> presetData;
         if (MidiPresetParser::load(filename, presetData))
