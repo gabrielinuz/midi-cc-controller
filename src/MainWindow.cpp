@@ -248,12 +248,13 @@ void MainWindow::onPortSelected()
         updateStatus("Error: MIDI service not available.");
         return;
     }
+
+    //Leer NOTES.md #1 para entender por qué es importante cerrar primero los puertos si están abiertos.
     if (m_midiService->isPortOpen()) 
     {
-        // IMPORTANT! Agrego esta línea porque si no cierro primero, luego falla al abrir en la línea 262.
         m_midiService->closePort();
     }
-    // m_midiService->closePort();// IMPORTANT! Agrego esta línea porque si no cierro primero, luego falla al abrir en la línea 262.
+
     int port_index = m_portChoice->value();
     if (port_index < 0 || port_index >= (int)m_midiService->getPortCount())
     {
@@ -362,8 +363,8 @@ void MainWindow::onSavePreset()
 }
 
 /**
-* @brief Implementa la lógica para resetear todos los controles a sus valores mínimos (0).
-*/
+ * @brief Implementa la lógica para resetear todos los controles a sus valores mínimos (0).
+ */
 void MainWindow::onResetAll() 
 {
     if (m_controls.empty()) 
@@ -408,11 +409,13 @@ void MainWindow::onSendAll() {
     updateStatus("Sent " + std::to_string(sent_count) + " MIDI CC messages on Channel " + std::to_string(m_currentMidiChannel + 1) + ".");
 }
 
-
+/** 
+ * @brief Llena el menú desplegable de puertos MIDI. 
+ */
 void MainWindow::populateMidiPorts()
 {
     if (!m_midiService) return;
-
+    
     m_portChoice->clear();
     unsigned int num_ports = m_midiService->getPortCount();
     if (num_ports == 0)
