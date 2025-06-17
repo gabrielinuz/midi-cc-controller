@@ -2,16 +2,18 @@
  * @file MainWindow.cpp
  * @author Gabriel Nicolás González Ferreira (gabrielinuz@fi.mdp.edu.ar)
  * @brief Implementación de la clase MainWindow.
- * @version 0.5
- * @date 2025-06-14
+ * @version 0.6
+ * @date 2025-06-17
  */
 #include "MainWindow.hpp"
 #include "MidiLayoutParser.hpp" // Nuevo include
 #include "MidiPresetParser.hpp" // Nuevo include
 #include "SliderControl.hpp"    // Se sigue necesitando para crear instancias
+#include "Utils.hpp" // Para la funciones de utilidad
 #include <FL/fl_ask.H>
 #include <FL/Fl.H>
 #include <FL/Fl_File_Chooser.H> // Necesario para diálogos de archivo
+#include <FL/fl_draw.H> /// @version 0.6: Incluir para fl_font() y fl_measure()
 #include <algorithm>
 #include <sstream>
 #include <fstream>
@@ -28,7 +30,7 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
     // --- Barra de Estado ---
     m_statusBox = new Fl_Box(10, current_y, width - 20, 25, "Status: Initializing...");
     m_statusBox->box(FL_THIN_UP_BOX);
-    m_statusBox->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+    m_statusBox->align(FL_ALIGN_LEFT | FL_ALIGN_WRAP | FL_ALIGN_INSIDE);
     current_y += 35;
 
     // --- Selector de Puerto MIDI ---
@@ -140,11 +142,12 @@ void MainWindow::addSliderControl(const SliderConfig& config, int y_position)
  */
 bool MainWindow::loadMidiLayoutFromFile(const std::string& filename)
 {
+    std::string display_name = Utils::getFileNameFromPath(filename); /// @version 0.6 - solo el nombre
     std::vector<SliderConfig> configs;
     if (!MidiLayoutParser::parse(filename, configs))
     {
-        updateStatus("Error loading MIDI layout from " + filename);
-        fl_alert(("Error al cargar el layout MIDI desde:\n" + filename).c_str());
+        updateStatus("Error loading MIDI layout from " + display_name);
+        fl_alert(("Error al cargar el layout MIDI desde:\n" + display_name).c_str());
         return false;
     }
 
@@ -153,8 +156,8 @@ bool MainWindow::loadMidiLayoutFromFile(const std::string& filename)
 
     if (configs.empty())
     {
-        updateStatus("Warning: No slider configurations found in " + filename);
-        fl_alert(("Advertencia: No se encontraron configuraciones de sliders en:\n" + filename + "\nEl controlador estará vacío.").c_str());
+        updateStatus("Warning: No slider configurations found in " + display_name);
+        fl_alert(("Advertencia: No se encontraron configuraciones de sliders en:\n" + display_name + "\nEl controlador estará vacío.").c_str());
         return true; // No es un error crítico si el archivo está vacío pero se abrió correctamente.
     }
 
@@ -181,7 +184,7 @@ bool MainWindow::loadMidiLayoutFromFile(const std::string& filename)
     m_window->size(m_window->w(), std::max(m_window->h(), minimum_height_for_controls));
     m_window->redraw(); // Forzar el redibujado de la ventana y sus hijos.
 
-    updateStatus("MIDI layout loaded from " + filename + ". " + std::to_string(configs.size()) + " sliders created.");
+    updateStatus("MIDI layout loaded from " + display_name + ". " + std::to_string(configs.size()) + " sliders created.");
     return true;
 }
 
@@ -192,14 +195,40 @@ void MainWindow::show(int argc, char** argv)
     onPortSelected();
 }
 
+// void MainWindow::updateStatus(const std::string& message)
+// {
+//     if (m_statusBox)
+//     {
+//         // m_statusBox->label(message.c_str());
+//         m_statusBox->copy_label(message.c_str());//Este método si actualiza el label
+//         m_statusBox->redraw();
+//         // Fl::check();
+//     }
+// }
+
+/** @version 0.6 Actualización de este método para que el texto se ajuste deinámicamente*/
 void MainWindow::updateStatus(const std::string& message)
 {
     if (m_statusBox)
     {
-        // m_statusBox->label(message.c_str());
-        m_statusBox->copy_label(message.c_str());//Este método si actualiza el label
+        // 1. Establecer la fuente y el tamaño globales para la medición,
+        //    usando los mismos que tiene nuestra barra de estado.
+        fl_font(m_statusBox->labelfont(), m_statusBox->labelsize());
+
+        // 2. Medir el ancho y alto que ocupará el nuevo texto.
+        int text_width = 0;
+        int text_height = 0;
+        fl_measure(message.c_str(), text_width, text_height);
+
+        // 3. Añadir un padding horizontal (ej: 20 píxeles en total) para que se vea mejor.
+        int box_width = text_width + 20;
+
+        // 4. Redimensionar el widget Fl_Box. Mantenemos la misma altura.
+        m_statusBox->size(box_width, m_statusBox->h());
+        
+        // 5. Ahora sí, actualizamos el texto y redibujamos el widget.
+        m_statusBox->copy_label(message.c_str());
         m_statusBox->redraw();
-        // Fl::check();
     }
 }
 
@@ -214,7 +243,7 @@ void MainWindow::onChannelSelected_static(Fl_Widget* w, void* userdata)
     static_cast<MainWindow*>(userdata)->onChannelSelected();
 }
 
-void MainWindow::onLoadLayout_static(Fl_Widget* w, void* userdata) // Nuevo callback
+void MainWindow::onLoadLayout_static(Fl_Widget* w, void* userdata)
 {
     static_cast<MainWindow*>(userdata)->onLoadLayout();
 }
@@ -232,7 +261,7 @@ void MainWindow::onSavePreset_static(Fl_Widget* w, void* userdata)
 /**
  * @brief Callback estático para el botón "Reset All".
  */
-void MainWindow::onResetAll_static(Fl_Widget* w, void* userdata) // <-- NUEVO: Implementación estática
+void MainWindow::onResetAll_static(Fl_Widget* w, void* userdata)
 { 
     static_cast<MainWindow*>(userdata)->onResetAll();
 }
@@ -308,9 +337,11 @@ void MainWindow::onLoadPreset()
     }
 
     const char* filename = fl_file_chooser("Load MIDI Preset", "*.csv", "");
+    std::string display_name = Utils::getFileNameFromPath(filename); /// @version 0.6 - solo el nombre
     if (filename)
     {
-        std::map<int, int> presetData;
+        /// @version 0.6: Usar el nuevo mapa con el struct PresetValue.
+        std::map<int, PresetValue> presetData;
         if (MidiPresetParser::load(filename, presetData))
         {
             int updated_count = 0;
@@ -319,16 +350,20 @@ void MainWindow::onLoadPreset()
                 int cc_num = control->getCcNumber();
                 if (presetData.count(cc_num))
                 {
-                    control->setCurrentValue(presetData[cc_num]);
+                    const auto& data = presetData.at(cc_num);
+                    /// @version 0.6: Establecer tanto el valor como el estado de activación.
+                    control->setCurrentValue(data.value);
+                    control->setActive(data.active);
                     updated_count++;
                 }
             }
-            updateStatus("Preset loaded from " + std::string(filename) + ". " + std::to_string(updated_count) + " controls updated.");
+            
+            updateStatus("Preset loaded from " + std::string(display_name) + ". " + std::to_string(updated_count) + " controls updated.");
         }
         else
         {
-            updateStatus("Error loading preset from " + std::string(filename));
-            fl_alert(("Error al cargar el preset MIDI desde:\n" + std::string(filename)).c_str());
+            updateStatus("Error loading preset from " + std::string(display_name));
+            fl_alert(("Error al cargar el preset MIDI desde:\n" + std::string(display_name)).c_str());
         }
     }
 }
@@ -346,9 +381,11 @@ void MainWindow::onSavePreset()
     }
 
     const char* filename_char = fl_file_chooser("Save MIDI Preset As", "*.csv", "preset.csv", 1);
+    
     if (filename_char)
     {
         std::string filename = filename_char;
+        std::string display_name = Utils::getFileNameFromPath(filename); /// @version 0.6 - solo el nombre
         // Asegurarse de que la extensión sea .csv
         if (filename.rfind(".csv") == std::string::npos)
         {
@@ -357,12 +394,12 @@ void MainWindow::onSavePreset()
 
         if (MidiPresetParser::save(filename, m_controls))
         {
-            updateStatus("Preset saved to " + filename);
+            updateStatus("Preset saved to " + display_name);
         }
         else
         {
-            updateStatus("Error saving preset to " + filename);
-            fl_alert(("No se pudo crear el archivo para guardar el preset:\n" + filename).c_str());
+            updateStatus("Error saving preset to " + display_name);
+            fl_alert(("No se pudo crear el archivo para guardar el preset:\n" + display_name).c_str());
         }
     }
 }
@@ -378,18 +415,23 @@ void MainWindow::onResetAll()
         return;
     }
 
-    // Iterar sobre todos los controles y establecer su valor a 0 (o al mínimo si prefieres)
+    int reset_count = 0;
     for (const auto& control : m_controls) 
     {
-        // Asumimos que los sliders deben resetearse a 0 o a su valor mínimo.
-        // En este caso, 0 es un valor MIDI CC común para "apagado" o "inicio".
-        control->setCurrentValue(0); // <-- Establece el valor a 0 (o control->m_config.min_value)
+        /// @version 0.6: Solo resetear y enviar si el control está activo.
+        if (control->isActive())
+        {
+            control->setCurrentValue(0); // <-- Establece el valor a 0 (o control->m_config.min_value)
 
-        // Después de establecer el valor, necesitamos simular el envío MIDI
-        // o directamente enviar el mensaje si setCurrentValue no lo hace.
-        m_midiService->sendCcMessage(m_currentMidiChannel, static_cast<unsigned char>(control->getCcNumber()), 0);
+            /*Después de establecer el valor, 
+            necesitamos simular el envío MIDI 
+            o directamente enviar el mensaje 
+            si setCurrentValue no lo hace.*/            
+            m_midiService->sendCcMessage(m_currentMidiChannel, static_cast<unsigned char>(control->getCcNumber()), 0);
+            reset_count++;
+        }
     }
-    updateStatus("Todos los controles han sido reseteados a 0.");
+    updateStatus(std::to_string(reset_count) + " active controls have been reset to 0.");
 }
 
 /**
@@ -407,14 +449,18 @@ void MainWindow::onSendAll()
     int sent_count = 0;
     for (const auto& control : m_controls)
     {
-        m_midiService->sendCcMessage(
-            m_currentMidiChannel,
-            static_cast<unsigned char>(control->getCcNumber()),
-            static_cast<unsigned char>(control->getCurrentValue())
-        );
-        sent_count++;
+        /// @version 0.6: Solo enviar el mensaje si el control está activo.
+        if (control->isActive())
+        {
+            m_midiService->sendCcMessage(
+                m_currentMidiChannel,
+                static_cast<unsigned char>(control->getCcNumber()),
+                static_cast<unsigned char>(control->getCurrentValue())
+            );
+            sent_count++;
+        }
     }
-    updateStatus("Sent " + std::to_string(sent_count) + " MIDI CC messages on Channel " + std::to_string(m_currentMidiChannel + 1) + ".");
+    updateStatus("Sent " + std::to_string(sent_count) + " active MIDI CC messages on Channel " + std::to_string(m_currentMidiChannel + 1) + ".");
 }
 
 /** 
