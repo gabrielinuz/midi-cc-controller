@@ -225,9 +225,11 @@ void MainWindow::updateStatus(const std::string& message)
         // 4. Redimensionar el widget Fl_Box. Mantenemos la misma altura.
         m_statusBox->size(box_width, m_statusBox->h());
         
-        // 5. Ahora sí, actualizamos el texto y redibujamos el widget.
+        // 5. Actualizamos el texto.
         m_statusBox->copy_label(message.c_str());
-        m_statusBox->redraw();
+
+        // @version 0.7 6. Redibujar el PADRE para limpiar artefactos. m_statusBox->redraw() no iba.
+        m_window->redraw(); // <-- SOLUCIÓN
     }
 }
 
