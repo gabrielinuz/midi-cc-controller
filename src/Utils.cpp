@@ -43,4 +43,14 @@ namespace Utils
             return filepath.substr(last_separator + 1);
         }
     }
+    
+    std::string getDirectoryFromPath(const std::string& filePath) 
+    {
+        size_t found = filePath.find_last_of("/\\");
+        if (found != std::string::npos) 
+        {
+            return filePath.substr(0, found);
+        }
+        return "."; // Devuelve el directorio actual si no se encuentra una barra.
+    }
 } // namespace Utils

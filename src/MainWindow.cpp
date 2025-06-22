@@ -19,8 +19,9 @@
 #include <fstream>
 #include <map> // Para cargar presets
 
+/// <-- @version 0.7: inicializar estas rutas a un valor por defecto, como el directorio actual "."
 MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr<MidiService> midiService)
-    : m_midiService(midiService)
+    : m_midiService(midiService), m_lastLayoutPath("."), m_lastPresetPath(".")
 {
     m_window = new Fl_Window(width, height, title);
     m_window->begin();
@@ -315,9 +316,12 @@ void MainWindow::onChannelSelected()
  */
 void MainWindow::onLoadLayout()
 {
-    const char* filename = fl_file_chooser("Load MIDI Controller Layout", "*.csv", "");
+    /// @version 0.7 Usar m_lastLayoutPath como valor inicial
+    const char* filename = fl_file_chooser("Load MIDI Controller Layout", "*.csv", m_lastLayoutPath.c_str());
     if (filename)
     {
+        /// @version 0.7 Actualizar la ruta para la próxima vez
+        m_lastLayoutPath = Utils::getDirectoryFromPath(filename);
         loadMidiLayoutFromFile(filename);
     }
 }
@@ -334,9 +338,12 @@ void MainWindow::onLoadPreset()
         return;
     }
 
-    const char* filename = fl_file_chooser("Load MIDI Preset", "*.csv", "");
+    const char* filename = fl_file_chooser("Load MIDI Preset", "*.csv", m_lastPresetPath.c_str());
     if (filename)
     {
+        /// @version 0.7 Actualizar la ruta para la próxima vez
+        m_lastPresetPath = Utils::getDirectoryFromPath(filename);
+
         /// @version 0.6 - solo el nombre, tiene que ir adentro o da error cuando sea nulo IMPORTANTE.
         std::string display_name = Utils::getFileNameFromPath(filename); 
 
