@@ -42,6 +42,7 @@ El proyecto sigue una arquitectura orientada a objetos (OOP) con una clara separ
 │   ├── MidiService.hpp        # Define la clase `MidiService`, que encapsula toda la lógica de comunicación con RtMidi.
 │   ├── SliderConfig.hpp       # Define la estructura `SliderConfig` para almacenar la configuración de un slider (CC#, descripción, rango). 
 │   └── SliderControl.hpp      # Define la clase `SliderControl`, una implementación concreta de `IMidiControl` para sliders.
+│   └── Utils.hpp              # Archivo de cabecera para funciones de utilidad generales.
 ├── src/
 │   ├── Application.cpp        # Implementa la lógica de `Application`, inicializando y conectando los componentes principales.  
 │   ├── MidiLayoutParser.cpp   # Implementa las funciones de `MidiLayoutParser` para parsear los archivos de layouts CSV.      
@@ -50,6 +51,7 @@ El proyecto sigue una arquitectura orientada a objetos (OOP) con una clara separ
 │   ├── MainWindow.cpp         # Implementa la lógica y el comportamiento de la interfaz de usuario de `MainWindow`.                 
 │   ├── MidiService.cpp        # Implementa los detalles de la comunicación MIDI, utilizando la librería RtMidi.   
 │   └── SliderControl.cpp      # Implementa la creación de widgets y el manejo de eventos para los sliders MIDI.
+│   └── Utils.cpp              # Implementación para funciones de utilidad generales.
 ```
 
 
