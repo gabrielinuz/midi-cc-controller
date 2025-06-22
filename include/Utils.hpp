@@ -20,6 +20,13 @@ namespace Utils
      * @return El nombre del archivo sin la ruta del directorio.
      */
     std::string getFileNameFromPath(const std::string& filepath);
+
+    /**
+     * @brief Extrae el directorio de una ruta de archivo completa.
+     * @param filePath La ruta completa del archivo (ej: /home/user/presets/my_preset.csv).
+     * @return El directorio que contiene el archivo (ej: /home/user/presets/).
+     */
+    std::string getDirectoryFromPath(const std::string& filePath);
 } // namespace Utils
 
 #endif // UTILS_HPP

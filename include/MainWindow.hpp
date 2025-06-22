@@ -124,4 +124,8 @@ class MainWindow
         /// @brief Vector de punteros únicos a las interfaces de control MIDI dinámicas.
         /// La ventana es dueña de estos controles.
         std::vector<std::unique_ptr<IMidiControl>> m_controls;
+
+        /// @version 0.7: Variables atributos miembro para recordar las rutas ---
+        std::string m_lastLayoutPath;
+        std::string m_lastPresetPath;
 };
