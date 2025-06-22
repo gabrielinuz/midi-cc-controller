@@ -32,5 +32,18 @@ Asegurarse de que los recursos se cierren de forma ordenada antes de reasignarlo
 
 La verificación:
 
-```cpp
-if (m_midiService->isPortOpen())
+```cpp if (m_midiService->isPortOpen())```
+
+### 5. Redibujar el PADRE para limpiar artefactos
+El problema aquí es sutil. Cuando se llama a m_statusBox->redraw(), solo se le está indicando a ese widget específico que se redibuje. Si el widget se hace más pequeño, el área de la ventana que estaba detrás del widget antiguo no recibe una orden de redibujado, por lo que los píxeles antiguos permanecen, creando ese efecto de "fantasma".
+
+La solución es simple: en lugar de redibujar solo el Fl_Box, debemos redibujar su widget padre, que en este caso es la ventana principal (m_window). Esto limpiará el fondo antes de dibujar el widget actualizado.
+
+### 6. Recordar el PATH
+Añadir variables para las rutas en MainWindow.hpp
+Necesitamos dos std::string para almacenar las rutas. Además, necesitaremos una función de utilidad para extraer el directorio de una ruta de archivo completa.
+
+Añadir dos std::string (m_lastLayoutPath, m_lastPresetPath) a MainWindow.hpp.
+Inicíciarlas en el constructor de MainWindow.
+Crear y usa una función Utils::getDirectoryFromPath.
+Modificar onLoadLayout y onLoadPreset para usar y actualizar estas variables al llamar a fl_file_chooser.
