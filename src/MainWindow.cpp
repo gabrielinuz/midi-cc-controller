@@ -6,8 +6,8 @@
  * @date 2025-06-17
  */
 #include "MainWindow.hpp"
-#include "MidiLayoutParser.hpp" // Nuevo include
-#include "MidiPresetParser.hpp" // Nuevo include
+#include "MidiLayoutParser.hpp"
+#include "MidiPresetParser.hpp"
 #include "SliderControl.hpp"    // Se sigue necesitando para crear instancias
 #include "Utils.hpp" // Para la funciones de utilidad
 #include <FL/fl_ask.H>
@@ -73,8 +73,8 @@ MainWindow::MainWindow(int width, int height, const char* title, std::shared_ptr
 
     // --- Botón de Reset All ---
     // Lo ubicamos al lado de los botones de patch
-    m_resetAllButton = new Fl_Button(button_x, current_y, button_width, button_height, "Reset All"); // <-- NUEVO: Botón Reset All
-    m_resetAllButton->callback(onResetAll_static, this); // <-- NUEVO: Callback para Reset All
+    m_resetAllButton = new Fl_Button(button_x, current_y, button_width, button_height, "Reset All");
+    m_resetAllButton->callback(onResetAll_static, this);
     button_x += button_width + button_spacing; // esto es necesario para el espacio entre botones
 
     m_sendAllButton = new Fl_Button(button_x, current_y, button_width, button_height, "Send All");
@@ -195,15 +195,6 @@ void MainWindow::show(int argc, char** argv)
     // Asegurarse de que el puerto MIDI esté inicializado y seleccionado si hay alguno disponible.
     onPortSelected();
 }
-
-// void MainWindow::updateStatus(const std::string& message)
-// {
-//     if (m_statusBox)
-//     {
-//         m_statusBox->copy_label(message.c_str());//Este método si actualiza el label
-//         m_statusBox->redraw();
-//     }
-// }
 
 /** @version 0.6 Actualización de este método para que el texto se ajuste deinámicamente*/
 void MainWindow::updateStatus(const std::string& message)

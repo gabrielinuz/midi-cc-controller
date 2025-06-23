@@ -29,7 +29,7 @@
  * @details Esta clase es responsable de crear la ventana, los widgets estáticos
  * (selectores de puerto/canal, barra de estado), los botones de gestión de patches,
  * y de cargar dinámicamente los controles MIDI.
- * @version 0.5: Separación de la carga de layout y preset. Nuevo botón "Load Layout".
+ * @version 0.5: Separación de la carga de layout y preset.
  * El guardado/carga de preset ahora solo maneja CC# y Value.
  */
 class MainWindow
@@ -72,19 +72,19 @@ class MainWindow
         // --- Callbacks estáticos de FLTK (trampolines) ---
         static void onPortSelected_static(Fl_Widget* w, void* userdata);
         static void onChannelSelected_static(Fl_Widget* w, void* userdata);
-        static void onLoadLayout_static(Fl_Widget* w, void* userdata); // Nuevo callback
+        static void onLoadLayout_static(Fl_Widget* w, void* userdata);
         static void onLoadPreset_static(Fl_Widget* w, void* userdata);
         static void onSavePreset_static(Fl_Widget* w, void* userdata);
-        static void onResetAll_static(Fl_Widget* w, void* userdata); // <-- NUEVO: Callback estático para reset
+        static void onResetAll_static(Fl_Widget* w, void* userdata);
         static void onSendAll_static(Fl_Widget* w, void* userdata);
 
         // --- Métodos de instancia para la lógica de los callbacks ---
         void onPortSelected();
         void onChannelSelected();
-        void onLoadLayout(); // Nuevo método de instancia
+        void onLoadLayout();
         void onLoadPreset();
         void onSavePreset();
-        void onResetAll(); // <-- NUEVO: Método de instancia para reset
+        void onResetAll();
         void onSendAll();
 
         /** @brief Llena el menú desplegable de puertos MIDI. */
@@ -110,11 +110,11 @@ class MainWindow
         Fl_Choice* m_channelChoice;
         Fl_Scroll* m_scrollGroup;
 
-        // Nuevos botones para la gestión de layout/presets
-        Fl_Button* m_loadLayoutButton; // Nuevo botón
+        // Botones para la gestión de layout/presets
+        Fl_Button* m_loadLayoutButton;
         Fl_Button* m_loadPresetButton;
         Fl_Button* m_savePresetButton;
-        Fl_Button* m_resetAllButton; // <-- NUEVO: Botón de reset
+        Fl_Button* m_resetAllButton;
         Fl_Button* m_sendAllButton;
 
         // --- Dependencias y Estado ---
