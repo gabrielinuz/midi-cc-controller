@@ -45,13 +45,13 @@ namespace MidiLayoutParser
 
             try
             {
-                // Leer CC# (campo 1)
-                std::getline(ss, segment, ';');
-                current_config.cc_number = std::stoi(segment);
-
-                // Leer Descripción (campo 2)
+                // Leer Descripción (campo 1)
                 std::getline(ss, segment, ';');
                 current_config.description = segment;
+
+                // Leer CC# (campo 2)
+                std::getline(ss, segment, ';');
+                current_config.cc_number = std::stoi(segment);
 
                 // Leer Rango (campo 3) - Formato "min-max"
                 std::getline(ss, segment, ';');
