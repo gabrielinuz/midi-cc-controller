@@ -1,0 +1,13 @@
+Description;CC#;Range
+Slide time;5;0-127
+Expression;11;0-127
+Octave;40;0-127
+LFO rate;41;0-127
+LFO intensity;42;0-127
+VCO pitch 1;43;0-127
+VCO pitch 2;44;0-127
+VCO pitch 3;45;0-127
+EG attack;46;0-127
+EG decay/release;47;0-127
+Cutoff EG intensity;48;0-127
+Gate time;49;0-127

@@ -1,0 +1,117 @@
+Description;CC#;Range
+Bank Select;0;0-127
+Mod Wheel;1;0-127
+Breath Ctrl;2;0-127
+Foot Ctrl;4;0-127
+Glide Rate;5;0-127
+Ch Vol;7;0-127
+Pan;10;0-127
+Arp Range;12;0-9
+Arp Length;13;0-15
+Arp Active;14;0-3
+LFO1 Shape;15;0-5
+LFO1 Speed;16;0-127
+LFO1 Sync;17;0-1
+LFO1 Delay;18;0-127
+LFO2 Shape;19;0-5
+LFO2 Speed;20;0-127
+LFO2 Sync;21;0-1
+LFO2 Delay;22;0-127
+LFO3 Shape;23;0-5
+LFO3 Speed;24;0-127
+LFO3 Sync;25;0-1
+LFO3 Delay;26;0-127
+OSC1 Octave;27;16-112
+OSC1 Semitone;28;52-76
+OSC1 Detune;29;0-127
+OSC1 FM;30;0-127
+OSC1 Shape;31;0-5
+OSC1 PulseWidth;33;0-127
+OSC1 PWM;34;0-127
+OSC2 octave;35;16-112
+OSC2 semitone;36;52-76
+OSC2 detune;37;0-127
+OSC2 FM;38;0-127
+OSC2 shape;39;0-5
+OSC2 pulsewidth;40;0-127
+OSC2 PWM;41;0-127
+OSC3 octave;42;16-112
+OSC3 semitone;43;52-76
+OSC3 detune;44;0-127
+OSC3 FM;45;0-127
+OSC3 shape;46;0-5
+OSC3 pulsewidth;47;0-127
+OSC3 PWM;48;0-127
+Sync;49;0-1
+Pitchmod;50;0-127
+Glide mode;51;0-9
+OSC 1 level;52;0-127
+OSC 1 bal;53;0-127
+Ringmod level;54;0-127
+Ringmod bal;55;0-127
+OSC 2 level;56;0-127
+OSC 2 bal;57;0-127
+OSC 3 level;58;0-127
+OSC 3 bal;59;0-127
+Noise level;60;0-127
+Noise bal;61;0-127
+Noise color;62;0-127
+Sustain pedal;64;0-127
+Glide active;65;0-127
+Sostenuto;66;0-127
+Flt Routing;67;0-1
+Flt 1 type;68;0-10
+Flt 1 cutoff;69;0-127
+Flt 1 resonance;70;0-127
+Flt 1 drive;71;0-127
+Flt 1 keytrack;72;0-127
+Flt 1 env amount;73;0-127
+Flt 1 env vel;74;0-127
+Flt 1 cutoff mod;75;0-127
+Flt 1 FM;76;0-127
+Flt 1 pan;77;0-127
+Flt 1 pan mod;78;0-127
+Flt 2 type;79;0-10
+Flt 2 cutoff;80;0-127
+Flt 2 resonance;81;0-127
+Flt 2 drive;82;0-127
+Flt 2 keytrack;83;0-127
+Flt 2 env amount;84;0-127
+Flt 2 env vel;85;0-127
+Flt 2 cutoff mod;86;0-127
+Flt 2 FM;87;0-127
+Flt 2 pan;88;0-127
+Flt 2 pan mod;89;0-127
+Amp volume;90;0-127
+Amp vel;91;0-127
+Amp mod;92;0-127
+FX 1 mix;93;0-127
+FX 2 mix;94;0-127
+Flt env attack;95;0-127
+Flt env decay;96;0-127
+Flt env sustain;97;0-127
+Flt env decay 2;98;0-127
+Flt env sustain 2;99;0-127
+Flt env release;100;0-127
+Amp env attack;101;0-127
+Amp env decay;102;0-127
+Amp env sustain;103;0-127
+Amp env decay 2;104;0-127
+Amp env sustain 2;105;0-127
+Amp env release;106;0-127
+Env 3 attack;107;0-127
+Env 3 decay;108;0-127
+Env 3 sustain;109;0-127
+Env 3 decay 2;110;0-127
+Env 3 sustain 2;111;0-127
+Env 3 release;112;0-127
+Env 4 attack;113;0-127
+Env 4 decay;114;0-127
+Env 4 sustain;115;0-127
+Env 4 decay 2;116;0-127
+Env 4 sustain 2;117;0-127
+Env 4 release;118;0-127
+All sound off;120;0-127
+Reset all;121;0-127
+Local control on/off;122;0-127
+All notes off;123;0-127
