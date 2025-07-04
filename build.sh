@@ -19,7 +19,7 @@ g++ \
 ./src/Utils.cpp \
 ./src/main.cpp \
 ./include/vendors/rtmidi/src/RtMidi.cpp \
--o ./bin/midi_cc_editor \
+-o ./bin/mccc \
 -D__LINUX_ALSA__ \
 -DRTMIDI_API_ALSA=ON \
 -DRTMIDI_API_JACK=OFF \
