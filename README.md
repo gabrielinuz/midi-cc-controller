@@ -1,6 +1,6 @@
 # MIDI CC Controller
 
-![Logo MIDI CC Controller](mcc-logo.png)
+<img src="mcc-logo.png" alt="Logo MIDI CC Controller" width="150" />
 
 ## Descripción del Proyecto
 
