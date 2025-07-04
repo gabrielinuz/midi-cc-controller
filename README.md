@@ -1,5 +1,7 @@
 # MIDI CC Controller
 
+![Logo MIDI CC Controller](mcc-logo.png)
+
 ## Descripción del Proyecto
 
 **MIDI CC Controller** es una aplicación de escritorio configurable diseñada para controlar dispositivos MIDI utilizando mensajes de Controladores Continuos (CC). Desarrollada en C++ con la interfaz gráfica FLTK y la biblioteca RtMidi para la comunicación MIDI, esta herramienta permite a los músicos y productores configurar y manipular fácilmente los parámetros de sus equipos MIDI de hardware y software.
