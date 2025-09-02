@@ -21,3 +21,5 @@
 * **Tarea 10:** Implementar la capacidad de cargar distintos componentes y no solo sliders desde la configuración, hacerlo polimórficamente. **PENDIENTE**
 
 * **Tarea 11:** Diagrama UML. **PENDIENTE**
+
+* **Tarea 12:** Implementar Sysex (envío y recepción). **PENDIENTE**
